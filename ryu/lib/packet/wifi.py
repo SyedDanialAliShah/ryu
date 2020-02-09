@@ -87,7 +87,7 @@ class WiFiMsg(packet_base.PacketBase):
         target_MEhost=int(target_bssid[-2:])
         target_load=int(target_load)
         #if rssi<-65 and target_rssi<-85 and target_bssid==02:
-        if rssi<-65 and target_load<5:
+        if rssi<-65 and target_rssi>-85 and target_load+1<5:
         #load = int(load)
         #target_load = int(target_load)
         
@@ -97,7 +97,7 @@ class WiFiMsg(packet_base.PacketBase):
             context = zmq.Context()
         #print("Connecting to Server on port 5555")
             socket = context.socket(zmq.REQ)
-            socket.connect("tcp://10.0.0.109:5531")
+            socket.connect("tcp://10.0.0.109:5530")
         #print('Sending Hello')
             socket.send('Instantiate Docker Application at ME Host {0} of Network {0}'.format(target_MEhost))
         #elif rssi<-65 and target_rssi<-85 and target_bssid==03:
@@ -108,6 +108,14 @@ class WiFiMsg(packet_base.PacketBase):
              #socket.send('Instantiate Docker at ME Host 3 of Network 3')
         #print('Waiting for answer')
         #message = socket.recv()
+        elif rssi<-65 and target_rssi>-85 and target_load+1>5:
+              import zmq
+              context = zmq.Context()
+              socket = context.socket(zmq.REQ)
+              socket.connect("tcp://10.0.0.109:5530")
+        #print('Sending Hello')
+              socket.send('Instantiate Docker Application at ME Host {0} of Network {0}'.format(target_MEhost))
+ 
         from . import ethernet
         WiFiMsg._TYPES = ethernet.ethernet._TYPES
         WiFiMsg.register_packet_type(ethernet.ethernet,
